@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
+  <title>迷雾不知道怎么改了</title>
+
+  <link rel="stylesheet" href="./css/index.css">
+
+  <!-- 国外CDN资源 -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.115.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.115.0/examples/js/postprocessing/EffectComposer.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.115.0/examples/js/postprocessing/RenderPass.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.115.0/examples/js/postprocessing/ShaderPass.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.115.0/examples/js/shaders/CopyShader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.115.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.115.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+
+</head>
+
+<body>
+<a href="https://mp.weixin.qq.com/s/oxLqXBcLCT8ij67DjkW2kw" style="position: fixed; top: 5%; right: 10px; width: 30px; height: 30px; z-index: 1000; background: #696969; border-radius: 50%; padding: 1.0px; text-align: center; color: #ddd; text-decoration: none; line-height: 30px; font-size: 11px;">制作</a>
+ <a href="https://drive.uc.cn/s/4819fdecb8a24" style="position: fixed; top: 15%; right: 10px; width: 30px; height: 30px; z-index: 998; background: #696969; border-radius: 50%; padding: 1.0px; text-align: center; color: #ddd; text-decoration: none; line-height: 30px; font-size: 11px;">代码</a>
+ <a href="https://pan.xunlei.com/s/VNlDcB3ABz0oNSOEv5mpSE_tA1?pwd=97rw#" style="position: fixed; top: 10%; right: 10px; width: 30px; height: 30px; z-index: 999; background: #696969; border-radius: 50%; padding: 1.0px; text-align: center; color: #ddd; text-decoration: none; line-height: 30px; font-size: 11px;">合集</a>
+<a href="https://shop1619956412.v.weidian.com/?userid=1619956412&spider_token=2720" style="position: fixed; top: 25%; right: 10px; width: 30px; height: 30px; z-index: 996; background: #696969; border-radius: 50%; padding: 1.0px; text-align: center; color: #ddd; text-decoration: none; line-height: 30px; font-size: 11px;">红包</a>
+
+
+
+  <!-- 音乐选择页面，选择完之后会覆盖替换掉 -->
+  <div id="overlay">
+    <!-- 音乐列表整体盒子 -->
+    <div id="music-list-box">
+      <h2>选择一首音乐开始</h2>
+      <!-- 默认基础音乐列表 -->
+      <ul id="base-music-list"></ul>
+
+      <ul id="upload-music">
+        <li class="separator">或</li>
+        <!-- 上传本地音乐 -->
+        <li>
+          <label class="upload-btn" for="upload">打开音乐文件</label>
+          <input type="file" id="upload" hidden />
+        </li>
+      </ul>
+    </div>
+
+    <!-- 背景星星动画，也会被覆盖掉 -->
+    <iframe id="overlay-bg" src="overlay-bg.html" frameborder="0"></iframe>
+  </div>
+
+  <script src="./js/index.js"></script>
+
+</body>
+
+</html>
