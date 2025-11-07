@@ -18,6 +18,11 @@ const musicList = [
     name: "No room at the inn",
     url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/ccCommunity/TRG_Banks/TRG_Banks_Christmas_Album/TRG_Banks_-_12_-_No_room_at_the_inn.mp3",
   },
+  // 新增本地音乐（关键部分）
+  {
+    name: "陪我过冬吧",  
+    url: "./jinniandongtianpeizhewoba.mp3"  
+  },
 ];
 
 /**
