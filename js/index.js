@@ -41,7 +41,7 @@ baseMusicListBox.appendChild(fragment);
 /**
  * 自动填充文字部分
  */
-let text = "Merry Christmas!<br>圣诞快乐";
+let text = "小韩哥哥！LOOK 这里<br>Merry Christmas!<br>圣诞快乐";
 const getQueryVariable = (variable) => {
   let query = window.location.search.substring(1);
   let vars = query.split("&");
@@ -86,6 +86,23 @@ document.querySelector("input").addEventListener("change", uploadAudio, false);
 document.querySelector(".upload-btn").addEventListener('touchstart', (e) => {
   e.preventDefault();
   document.querySelector("#upload").click();
+});
+
+// 新增：提前解锁音频上下文（关键！）
+function unlockAudioContext() {
+  if (listener.context.state === 'suspended') {
+    const unlockSource = listener.context.createBufferSource();
+    unlockSource.buffer = listener.context.createBuffer(1, 1, 22050);
+    unlockSource.connect(listener.context.destination);
+    unlockSource.start();
+    unlockSource.stop();
+  }
+}
+// 页面加载后立即尝试解锁，同时绑定用户交互事件确保兼容
+document.addEventListener('DOMContentLoaded', () => {
+  unlockAudioContext();
+  document.addEventListener('touchstart', unlockAudioContext, { once: true });
+  document.addEventListener('click', unlockAudioContext, { once: true });
 });
 
 /**
@@ -178,11 +195,11 @@ function animate(time) {
 }
 
 /**
- * 加载音乐 - 确保由用户点击触发
+ * 加载音乐 - 确保由用户点击触发且同步执行
  */
 function loadAudio(i) {
   const overlay = document.getElementById("overlay");
-  overlay.innerHTML = '<div class="text-loading">加载中...</div>';
+  overlay.innerHTML = '<div class="text-loading">小韩哥哥稍等一下...</div>';
 
   const file = musicList[i].url;
   const loader = new THREE.AudioLoader();
@@ -190,7 +207,7 @@ function loadAudio(i) {
   loader.load(file, function (buffer) {
     audio.setBuffer(buffer);
     
-    // 兼容所有浏览器：用户点击后直接播放
+    // 强制同步执行播放（移动端必须在用户交互回调中立即执行）
     try {
       audio.play();
       analyser = new THREE.AudioAnalyser(audio, fftSize);
@@ -202,11 +219,11 @@ function loadAudio(i) {
 }
 
 /**
- * 上传音乐 - 确保由用户点击触发
+ * 上传音乐 - 确保由用户点击触发且同步执行
  */
 function uploadAudio(event) {
   const overlay = document.getElementById("overlay");
-  overlay.innerHTML = '<div class="text-loading">加载中...</div>';
+  overlay.innerHTML = '<div class="text-loading">小韩哥哥稍等一下...</div>';
   const files = event.target.files;
   if (!files.length) return;
 
