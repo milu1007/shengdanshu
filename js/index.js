@@ -29,7 +29,7 @@ musicList.forEach((item, index) => {
   let li = document.createElement("li");
   li.innerHTML = `<button class="btn" type="button">${item.name}</button>`;
   fragment.appendChild(li);
-  // 绑定点击和触摸事件
+  // 绑定点击和触摸事件（确保用户交互触发播放）
   li.querySelector('.btn').addEventListener('click', () => loadAudio(index));
   li.querySelector('.btn').addEventListener('touchstart', (e) => {
     e.preventDefault();
@@ -41,7 +41,7 @@ baseMusicListBox.appendChild(fragment);
 /**
  * 自动填充文字部分
  */
-let text = "小韩哥哥！<br>Merry Christmas!<br>圣诞快乐";
+let text = "Merry Christmas!<br>圣诞快乐";
 const getQueryVariable = (variable) => {
   let query = window.location.search.substring(1);
   let vars = query.split("&");
@@ -178,11 +178,11 @@ function animate(time) {
 }
 
 /**
- * 加载音乐
+ * 加载音乐 - 确保由用户点击触发
  */
 function loadAudio(i) {
   const overlay = document.getElementById("overlay");
-  overlay.innerHTML = '<div class="text-loading">小韩哥哥稍等一下呢...</div>';
+  overlay.innerHTML = '<div class="text-loading">加载中...</div>';
 
   const file = musicList[i].url;
   const loader = new THREE.AudioLoader();
@@ -190,21 +190,11 @@ function loadAudio(i) {
   loader.load(file, function (buffer) {
     audio.setBuffer(buffer);
     
-    // 兼容不返回Promise的浏览器
+    // 兼容所有浏览器：用户点击后直接播放
     try {
-      const playResult = audio.play();
-      
-      if (playResult && typeof playResult.then === 'function') {
-        playResult.then(() => {
-          analyser = new THREE.AudioAnalyser(audio, fftSize);
-          init();
-        }).catch(err => {
-          handlePlayError();
-        });
-      } else {
-        analyser = new THREE.AudioAnalyser(audio, fftSize);
-        init();
-      }
+      audio.play();
+      analyser = new THREE.AudioAnalyser(audio, fftSize);
+      init();
     } catch (err) {
       handlePlayError();
     }
@@ -212,11 +202,11 @@ function loadAudio(i) {
 }
 
 /**
- * 上传音乐
+ * 上传音乐 - 确保由用户点击触发
  */
 function uploadAudio(event) {
   const overlay = document.getElementById("overlay");
-  overlay.innerHTML = '<div class="text-loading">小韩哥哥稍等一下呢...</div>';
+  overlay.innerHTML = '<div class="text-loading">加载中...</div>';
   const files = event.target.files;
   if (!files.length) return;
 
@@ -227,19 +217,9 @@ function uploadAudio(event) {
       audio.setBuffer(audioBuffer);
       
       try {
-        const playResult = audio.play();
-        
-        if (playResult && typeof playResult.then === 'function') {
-          playResult.then(() => {
-            analyser = new THREE.AudioAnalyser(audio, fftSize);
-            init();
-          }).catch(err => {
-            handlePlayError();
-          });
-        } else {
-          analyser = new THREE.AudioAnalyser(audio, fftSize);
-          init();
-        }
+        audio.play();
+        analyser = new THREE.AudioAnalyser(audio, fftSize);
+        init();
       } catch (err) {
         handlePlayError();
       }
@@ -249,7 +229,7 @@ function uploadAudio(event) {
 }
 
 /**
- * 处理播放错误（需要用户交互）
+ * 处理播放错误（引导用户再次点击）
  */
 function handlePlayError() {
   const overlay = document.getElementById("overlay");
@@ -257,16 +237,9 @@ function handlePlayError() {
   
   const playOnClick = function() {
     try {
-      const playResult = audio.play();
-      if (playResult && typeof playResult.then === 'function') {
-        playResult.then(() => {
-          analyser = new THREE.AudioAnalyser(audio, fftSize);
-          init();
-        });
-      } else {
-        analyser = new THREE.AudioAnalyser(audio, fftSize);
-        init();
-      }
+      audio.play();
+      analyser = new THREE.AudioAnalyser(audio, fftSize);
+      init();
     } catch (err) {
       console.error("播放失败:", err);
     }
