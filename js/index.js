@@ -41,7 +41,7 @@ baseMusicListBox.appendChild(fragment);
 /**
  * 自动填充文字部分
  */
-let text = "Merry Christmas!<br>圣诞快乐";
+let text = "小韩哥哥!<br>Merry Christmas!<br>圣诞快乐";
 const getQueryVariable = (variable) => {
   let query = window.location.search.substring(1);
   let vars = query.split("&");
@@ -210,7 +210,7 @@ function animate(time) {
  */
 function loadAudio(i) {
   const overlay = document.getElementById("overlay");
-  overlay.innerHTML = '<div class="text-loading">加载中...</div>';
+  overlay.innerHTML = '<div class="text-loading">拜托了,小韩哥哥耐心等待一下下！</div>';
 
   const file = musicList[i].url;
   const loader = new THREE.AudioLoader();
