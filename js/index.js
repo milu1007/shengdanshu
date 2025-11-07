@@ -41,7 +41,7 @@ baseMusicListBox.appendChild(fragment);
 /**
  * 自动填充文字部分
  */
-let text = "小韩哥哥!<br>Merry Christmas!<br>圣诞快乐";
+let text = "小韩哥哥！<br>Merry Christmas!<br>圣诞快乐";
 const getQueryVariable = (variable) => {
   let query = window.location.search.substring(1);
   let vars = query.split("&");
@@ -89,43 +89,16 @@ document.querySelector(".upload-btn").addEventListener('touchstart', (e) => {
 });
 
 /**
- * 添加平面（地面）
- */
-function addPlane(scene, uniforms, size) {
-  const vertexShader = `
-  varying vec2 vUv;
-  void main() {
-    vUv = uv;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  }
-  `;
-  const fragmentShader = `
-  varying vec2 vUv;
-  uniform float time;
-  void main() {
-    gl_FragColor = vec4(0.1, 0.1, 0.2, 1.0);
-  }
-  `;
-  const material = new THREE.ShaderMaterial({
-    uniforms: { ...uniforms },
-    vertexShader,
-    fragmentShader,
-  });
-  const geometry = new THREE.PlaneGeometry(size, size);
-  const plane = new THREE.Mesh(geometry, material);
-  plane.rotation.x = -Math.PI / 2;
-  plane.position.y = -6;
-  scene.add(plane);
-}
-
-/**
- * 初始化场景（适配手机屏幕）
+ * 初始化场景（适配手机屏幕）- 已移除地面相关元素
  */
 function init() {
   const overlay = document.getElementById("overlay");
   overlay.remove();
 
   scene = new THREE.Scene();
+  // 设置场景背景为深黑色（替代地面）
+  scene.background = new THREE.Color(0x050508);
+  
   renderer = new THREE.WebGLRenderer({ 
     antialias: true,
     alpha: true
@@ -160,8 +133,7 @@ function init() {
     value: new THREE.DataTexture(analyser.data, fftSize / 2, 1, format),
   };
 
-  // 添加场景元素
-  addPlane(scene, uniforms, 2000);
+  // 添加场景元素（仅保留雪花和树木，移除地面）
   addSnow(scene, uniforms);
   
   // 添加树木
@@ -210,7 +182,7 @@ function animate(time) {
  */
 function loadAudio(i) {
   const overlay = document.getElementById("overlay");
-  overlay.innerHTML = '<div class="text-loading">拜托了,小韩哥哥耐心等待一下下！</div>';
+  overlay.innerHTML = '<div class="text-loading">小韩哥哥稍等一下呢...</div>';
 
   const file = musicList[i].url;
   const loader = new THREE.AudioLoader();
@@ -218,14 +190,11 @@ function loadAudio(i) {
   loader.load(file, function (buffer) {
     audio.setBuffer(buffer);
     
-    // 修复：兼容不返回Promise的浏览器
+    // 兼容不返回Promise的浏览器
     try {
-      // 尝试播放音频
       const playResult = audio.play();
       
-      // 检测返回值是否为Promise
       if (playResult && typeof playResult.then === 'function') {
-        // 支持Promise的现代浏览器
         playResult.then(() => {
           analyser = new THREE.AudioAnalyser(audio, fftSize);
           init();
@@ -233,12 +202,10 @@ function loadAudio(i) {
           handlePlayError();
         });
       } else {
-        // 不支持Promise的旧浏览器
         analyser = new THREE.AudioAnalyser(audio, fftSize);
         init();
       }
     } catch (err) {
-      // 播放失败时的降级处理
       handlePlayError();
     }
   });
@@ -249,7 +216,7 @@ function loadAudio(i) {
  */
 function uploadAudio(event) {
   const overlay = document.getElementById("overlay");
-  overlay.innerHTML = '<div class="text-loading">加载中...</div>';
+  overlay.innerHTML = '<div class="text-loading">小韩哥哥稍等一下呢...</div>';
   const files = event.target.files;
   if (!files.length) return;
 
@@ -259,7 +226,6 @@ function uploadAudio(event) {
     listener.context.decodeAudioData(arrayBuffer, function (audioBuffer) {
       audio.setBuffer(audioBuffer);
       
-      // 修复：同样的Promise兼容处理
       try {
         const playResult = audio.play();
         
@@ -289,7 +255,6 @@ function handlePlayError() {
   const overlay = document.getElementById("overlay");
   overlay.innerHTML = '<div class="text-loading">请点击屏幕继续播放</div>';
   
-  // 添加单次点击事件监听
   const playOnClick = function() {
     try {
       const playResult = audio.play();
@@ -529,85 +494,6 @@ function addSnow(scene, uniforms) {
   sprites.forEach((sprite) => {
     createSnowSet(sprite);
   });
-}
-
-function addPlaneGround(scene, uniforms, totalPoints) {
-  const vertexShader = `
-  attribute float size;
-  attribute vec3 customColor;
-  varying vec3 vColor;
-
-  void main() {
-      vColor = customColor;
-      vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
-      gl_PointSize = size * ( 300.0 / -mvPosition.z );
-      gl_Position = projectionMatrix * mvPosition;
-
-  }
-  `;
-  const fragmentShader = `
-  uniform vec3 color;
-  uniform sampler2D pointTexture;
-  varying vec3 vColor;
-
-  void main() {
-      gl_FragColor = vec4( vColor, 1.0 );
-      gl_FragColor = gl_FragColor * texture2D( pointTexture, gl_PointCoord );
-
-  }
-  `;
-  const shaderMaterial = new THREE.ShaderMaterial({
-    uniforms: {
-      ...uniforms,
-      pointTexture: {
-        value: new THREE.TextureLoader().load(
-          `https://assets.codepen.io/3685267/spark1.png`
-        ),
-      },
-    },
-    vertexShader,
-    fragmentShader,
-    blending: THREE.AdditiveBlending,
-    depthTest: false,
-    transparent: true,
-    vertexColors: true,
-  });
-
-  const geometry = new THREE.BufferGeometry();
-  const positions = [];
-  const colors = [];
-  const sizes = [];
-
-  const color = new THREE.Color();
-
-  for (let i = 0; i < totalPoints; i++) {
-    const [x, y, z] = [rand(-25, 25), 0, rand(-150, 15)];
-    positions.push(x);
-    positions.push(y);
-    positions.push(z);
-
-    color.set(randChoise(["#93abd3", "#f2f4c0", "#9ddfd3"]));
-
-    colors.push(color.r, color.g, color.b);
-    sizes.push(1);
-  }
-
-  geometry.setAttribute(
-    "position",
-    new THREE.Float32BufferAttribute(positions, 3).setUsage(
-      THREE.DynamicDrawUsage
-    )
-  );
-  geometry.setAttribute(
-    "customColor",
-    new THREE.Float32BufferAttribute(colors, 3)
-  );
-  geometry.setAttribute("size", new THREE.Float32BufferAttribute(sizes, 1));
-
-  const plane = new THREE.Points(geometry, shaderMaterial);
-
-  plane.position.y = -8;
-  scene.add(plane);
 }
 
 function addListners(camera, renderer, composer) {
